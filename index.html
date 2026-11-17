@@ -892,6 +892,83 @@
 </head>
 <body>
 
+   <!-- =========================================================================
+         2. APPLICATION SHELL & MAIN WORKSPACE
+         ========================================================================= -->
+    <div id="app-shell" style="display: none; flex-direction: column; width: 100%; height: 100%;">
+        <!-- Top Terminal Header Bar -->
+        <div class="top-bar">
+            <div class="brand-section">
+                <span class="brand-title">SLINGER // CALENDAR & NOTEBOOK</span>
+                <span id="sync-status" class="sync-badge">---</span>
+            </div>
+            <div class="nav-controls">
+                <div class="view-switcher">
+                    <button type="button" id="btn-view-month" class="active" onclick="setView('month')">month</button>
+                    <button type="button" id="btn-view-week" onclick="setView('week')">week</button>
+                    <button type="button" id="btn-view-day" onclick="setView('day')">day</button>
+                </div>
+                <div class="date-nav">
+                    <button type="button" onclick="navigatePeriod(-1)"><</button>
+                    <button type="button" class="current-period-label" id="period-label" onclick="goToday()">---</button>
+                    <button type="button" onclick="navigatePeriod(1)">></button>
+                </div>
+            </div>
+            <div class="utility-actions">
+                <button type="button" id="btn-sync-now" onclick="syncNow()" style="display:none;">[sync gist]</button>
+                <button type="button" onclick="openConfigModal()">[config]</button>
+                <button type="button" onclick="exportBackup()">[export]</button>
+                <button type="button" onclick="document.getElementById('import-file-input').click()">[import]</button>
+                <input type="file" id="import-file-input" style="display:none;" accept=".json" onchange="importBackup(event)">
+                <button type="button" class="btn-danger" onclick="lockSession()">[lock]</button>
+            </div>
+        </div>
+
+        <!-- Mobile Pane Switcher -->
+        <div class="mobile-pane-bar">
+            <button type="button" id="mob-tab-cal" class="active" onclick="setMobilePane('calendar')">calendar (<span id="mob-note-date">---</span>)</button>
+            <button type="button" id="mob-tab-note" onclick="setMobilePane('notebook')">daily notebook</button>
+        </div>
+
+        <!-- Main Split Workspace -->
+        <div class="workspace" id="main-workspace">
+            <!-- Left Pane: Calendar Views -->
+            <div style="flex: 1 1 65%; display: flex; flex-direction: column; border-right: 1px solid #ffffff; overflow: hidden; min-width: 0;">
+                
+                <!-- Category Legend Bar (ID ADDED HERE) -->
+                <div class="category-bar" id="category-filter-bar">
+                    <div class="cat-chip active-filter" data-cat="all" onclick="setCategoryFilter('all')">
+                        <span class="cat-dot" style="background:#fff;"></span><span>all</span>
+                    </div>
+                </div>
+
+                <!-- Calendar View Containers -->
+                <div class="calendar-body" id="calendar-body"></div>
+            </div>
+
+            <!-- Right Pane: Daily Notebook -->
+            <div class="notebook-pane">
+                <div class="notebook-header">
+                    <span id="notebook-title" style="font-weight: 700;">[NOTEBOOK]</span>
+                    <span id="notebook-weekday" style="color: var(--accent-cyan); text-transform: uppercase;">---</span>
+                </div>
+                <div class="notebook-toolbar">
+                    <button type="button" onclick="toggleLineCheck()">[x] toggle check</button>
+                    <button type="button" onclick="insertTimestamp()">[+] timestamp</button>
+                    <button type="button" onclick="insertNoteSnippet('## ')">## header</button>
+                    <button type="button" onclick="insertNoteSnippet('> ')">> quote</button>
+                </div>
+                <div class="notebook-editor-wrap">
+                    <textarea id="notebook-textarea" placeholder="type your daily notes, task lists, logs, or terminal fragments here..."></textarea>
+                </div>
+                <div class="notebook-footer">
+                    <span id="note-save-state">status: synced</span>
+                    <span id="note-stats">0 chars | 0 lines</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- =========================================================================
          1. TERMINAL LOCK / E2E GIST AUTHENTICATION SCREEN
          ========================================================================= -->
@@ -921,7 +998,7 @@
 
                 <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: 4px;">
                     <button type="button" class="btn-dim" onclick="switchAuthTab('setup')">[edit token / gist id]</button>
-                    <button type="submit" class="btn-accent">[decrypt &amp; unlock]</button>
+                    <button type="submit" class="btn-accent">[decrypt & unlock]</button>
                 </div>
             </form>
 
@@ -1083,7 +1160,7 @@
                     <button type="button" class="btn-danger" onclick="unlinkGistVault()">unlink device</button>
                     <div style="display:flex; gap:8px;">
                         <button type="button" class="btn-dim" onclick="closeConfigModal()">close</button>
-                        <button type="button" class="btn-accent" onclick="saveVaultConfig()">save &amp; re-encrypt</button>
+                        <button type="button" class="btn-accent" onclick="saveVaultConfig()">save & re-encrypt</button>
                     </div>
                 </div>
             </div>
